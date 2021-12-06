@@ -230,6 +230,13 @@
       "area": [300, 560, 460, 600],
       "actions": [{ "name": "click" }, { "name": "sleep", "args": [1] }],
       "text": "已升级"
+    },
+    {
+        "name": "开始多人游戏",
+        "path": "duorenyouxi.png",
+        "area": [343, 840, 610, 908],
+        "actions": [{"name": "click"}],
+        "text": "开始多人游戏"
     }
   ],
   "参加": [
