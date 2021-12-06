@@ -1,9 +1,54 @@
 import os
+import re
 import random
 import sys
+import subprocess as sp
 
 from ppadb.client import Client as AdbClient
 from utils.LogUtil import Log
+
+from collections import namedtuple
+
+Size = namedtuple("Size", [
+    'width',
+    'height'
+])
+
+class CLIADB:
+    def __init__(self, serial):
+        self.serial = serial
+
+    def shell(self, *cmd):
+        return sp.check_output(['adb', '-s', self.serial, 'shell', *[str(c) for c in cmd]])
+
+    def screencap(self):
+        return self.shell('screencap', '-p')
+    def input_tap(self, x, y):
+        return self.shell('input', 'tap', x, y)
+    def input_swip(self, start_x, start_y, end_x, end_y, duration):
+        return self.shell('input', 'swipe', start_x, start_y, end_x, end_y, duration)
+
+    SIZE_RE = b'Physical size:\s([\d]+)x([\d]+)'
+    def wm_size(self):
+        result = self.shell("wm size")
+        match = re.search(self.SIZE_RE, result)
+
+        if match:
+            return Size(int(match.group(1)), int(match.group(2)))
+        else:
+            return None
+
+    def get_properties(self):
+        result = self.shell("getprop").decode('utf-8')
+        result_pattern = r"^\[([\s\S]*?)\]: \[([\s\S]*?)\]\r?$"
+
+        properties = {}
+        for line in result.split('\n'):
+            m = re.match(result_pattern, line)
+            if m:
+                properties[m.group(1)] = m.group(2)
+
+        return properties
 
 
 class ADBUtil:
@@ -47,6 +92,9 @@ class ADBUtil:
             serial = input("请输入设备IP和端口进行连接，默认127.0.0.1:5555\n")
             ip, port = serial.split(":")
             self.adb.remote_connect(str(ip), int(port))
+        elif len(devices) == 1:
+            Log.info("检测到唯一已连接的设备")
+            serial = devices[0].serial
         else:
             print("检测到已连接的设备，请输入序号指定要连接的设备:")
             for i in range(0, len(devices)):
@@ -77,7 +125,8 @@ class ADBUtil:
         if serial is None:
             return
 
-        self.device = self.adb.device(serial)
+        # self.device = self.adb.device(serial)
+        self.device = CLIADB(serial)
         self.logDeviceInfo()
 
     def logDeviceInfo(self):
@@ -94,7 +143,10 @@ class ADBUtil:
             # print(props)
         except ValueError:
             Log.error("获取设备信息失败")
-            sys.exit()
+            Log.info(f"{props=}")
+        except KeyError:
+            Log.error("获取设备信息失败")
+            Log.info(f"{props=}")
 
     def __init__(self):
         if getattr(sys, "frozen", None):
