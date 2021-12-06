@@ -69,10 +69,8 @@ class ActionManager:
         else:
             name, mode = args[0], "once"
 
-        targets = self.wfhelper.config.targetList[name]
-
         if mode == "loop":
-            return self.state.setState("currentTargets", targets)
+            return self.state.setState("currentTargets", name)
 
         if mode == "once":
             return self.changeTarget([name, None])
