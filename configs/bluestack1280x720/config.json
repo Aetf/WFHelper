@@ -8,6 +8,7 @@
   "randomClickArea": [0, 1240, 40, 1280],
   "screenSize": [1280, 720],
   "state": {
+    "fullEnergy": "True",
     "八岐大蛇": "0b1",
     "管理者": "0b11",
     "诅咒弧魔艾基尔": "0b11",
@@ -73,21 +74,6 @@
       "area": [25, 50, 65, 90],
       "actions": [{ "name": "click" }],
       "text": "准备上车"
-    },
-    {
-      "name": "多人游戏",
-      "path": "duorenyouxi.png",
-      "area": [343, 840, 610, 908],
-      "actions": [
-        {
-          "name": "info",
-          "args": ["检测到多人游戏"]
-        },
-        {
-          "name": "changeTargets",
-          "args": ["体力检测"]
-        }
-      ]
     },
     {
       "name": "暂停",
@@ -248,6 +234,37 @@
       "area": [300, 560, 460, 600],
       "actions": [{ "name": "click" }, { "name": "sleep", "args": [1] }],
       "text": "已升级"
+    },
+    {
+      "name": "多人游戏",
+      "path": "duorenyouxi.png",
+      "area": [343, 840, 610, 908],
+      "description": "自动开车 - 等待 最终会跳回mainTargets",
+      "actions": [
+        {
+          "name": "changeTargets",
+          "args": ["体力检测"]
+        },
+        {
+          "name": "match",
+          "args": [
+            "$fullEnergy",
+            {
+              "True": [
+                {
+                  "name": "state",
+                  "args": ["increase", "发车数量", "1"]
+                },
+                { "name": "click" },
+                {
+                  "name": "changeTargets",
+                  "args": ["自动开车 - 等待", "loop"]
+                }
+              ]
+            }
+          ]
+        }
+      ]
     }
   ],
   "体力检测": [
@@ -258,25 +275,31 @@
       "area": [210, 25, 250, 45],
       "actions": [
         {
-          "name": "info",
-          "args": ["体力过半，自动开车"]
+          "name": "match",
+          "args": [
+            "$fullEnergy",
+            {
+              "False": [{"name": "info", "args": ["体力已经恢复"]}]
+            }
+          ]
         },
+        {"name": "state", "args": ["set", "fullEnergy", "True"]}
+      ]
+    },
+    {
+      "name": "体力不足",
+      "description": "前一个target没有找到，所以没有体力",
+      "actions": [
         {
-          "name": "state",
-          "args": ["increase", "自己发车数量", "1"]
+          "name": "match",
+          "args": [
+            "$fullEnergy",
+            {
+              "True": [{"name": "info", "args": ["体力低于阈值"]}]
+            }
+          ]
         },
-        {
-          "name": "click",
-          "args": [[343, 840, 610, 908]]
-        },
-        {
-          "name": "sleep",
-          "args": [1]
-        },
-        {
-          "name": "changeTargets",
-          "args": ["自动开车 - 等待", "loop"]
-        }
+        {"name": "state", "args": ["set", "fullEnergy", "False"]}
       ]
     }
   ],
@@ -295,6 +318,13 @@
           "args": ["mainTargets", "loop"]
         }
       ]
+    },
+    {
+        "name": "使用加成",
+        "path": "jiacheng.png",
+        "area": [390, 800, 650, 850],
+        "text": "使用领主加成",
+        "actions": [{"name": "click"}]
     }
   ],
   "自动开车": [
