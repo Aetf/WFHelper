@@ -202,7 +202,22 @@
       "name": "解散",
       "path": "jiesan.png",
       "area": [120, 1180, 320, 1220],
-      "actions": [{ "name": "click" }, { "name": "sleep", "args": [2] }],
+      "actions": [
+        { "name": "click" },
+        { "name": "sleep", "args": [1] },
+        {
+          "name": "state",
+          "args": ["increase", "完成次数", 1]
+        },
+        {
+          "name": "state",
+          "args": ["increase", "$正在挑战的boss", 1]
+        },
+        {
+          "name": "state",
+          "args": ["set", "正在挑战的boss", "无"]
+        }
+      ],
       "text": "发车完成，离开房间"
     },
     {
