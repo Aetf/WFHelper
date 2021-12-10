@@ -83,6 +83,20 @@
       "text": "蹭车失败，解除暂停"
     },
     {
+      "name": "再次挑战",
+      "path": "again.png",
+      "area": [415, 1180, 600, 1230],
+      "actions": [
+        { "name": "click" },
+        { "name": "sleep", "args": [1] },
+        {
+          "name": "state",
+          "args": ["set", "正在挑战的boss", "无"]
+        }
+      ],
+      "text": "再次挑战"
+    },
+    {
       "name": "OK",
       "path": "ok.png",
       "area": [300, 800, 460, 840],
@@ -190,6 +204,13 @@
       "area": [280, 850, 460, 940],
       "actions": [{ "name": "click" }, { "name": "sleep", "args": [2] }],
       "text": "开始发车"
+    },
+    {
+      "name": "挑战",
+      "path": "tiaozhan.png",
+      "area": [240, 1060, 480, 1130],
+      "actions": [{ "name": "click" }, { "name": "sleep", "args": [2] }],
+      "text": "开始挑战"
     },
     {
       "name": "发车失败",
